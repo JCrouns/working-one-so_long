@@ -25,7 +25,7 @@ void find_player_position(char **tab, int rows, int cols)
     }
 }
 
-int move_player(char **tab, int rows, int cols, char direction)
+*/int move_player(char **tab, int rows, int cols, char direction)
 {
     find_player_position(tab, rows, cols);
 
@@ -57,9 +57,62 @@ int move_player(char **tab, int rows, int cols, char direction)
     player_col = new_col;
     tab[player_row][player_col] = PLAYER;
     return 1;
+}*/
+
+int can_move(char **tab, int rows, int cols, int new_row, int new_col, char direction) {
+    if (direction == 'W' && new_row > 0 && tab[new_row - 1][new_col] != WALL) {
+        return 1;
+    }
+    else if (direction == 'S' && new_row < rows - 1 && tab[new_row + 1][new_col] != WALL) {
+        return 1;
+    }
+    else if (direction == 'A' && new_col > 0 && tab[new_row][new_col - 1] != WALL) {
+        return 1;
+    }
+    else if (direction == 'D' && new_col < cols - 1 && tab[new_row][new_col + 1] != WALL) {
+        return 1;
+    }
+    return 0;
 }
 
+// Function to handle the movement and collect items
+void move_and_collect(char **tab, int new_row, int new_col) {
+    if (tab[new_row][new_col] == COLLECTABLE) {
+        collected_items++;
+    }
 
+    tab[player_row][player_col] = SPACE;
+    player_row = new_row;
+    player_col = new_col;
+    tab[player_row][player_col] = PLAYER;
+}
+
+// Main move_player function now using helper functions
+int move_player(char **tab, int rows, int cols, char direction) {
+    find_player_position(tab, rows, cols);
+
+    int new_row = player_row;
+    int new_col = player_col;
+
+    if (can_move(tab, rows, cols, new_row, new_col, direction)) {
+        if (direction == 'W') {
+            new_row--;
+        }
+        else if (direction == 'S') {
+            new_row++;
+        }
+        else if (direction == 'A') {
+            new_col--;
+        }
+        else if (direction == 'D') {
+            new_col++;
+        }
+        
+        move_and_collect(tab, new_row, new_col);
+        return 1;
+    }
+    return 0;
+}    
 
 int key_hook(int keycode, void *param)
 {
