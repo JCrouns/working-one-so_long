@@ -1,33 +1,59 @@
 #ifndef SO_LONG_H
-#define SO_LONG_H
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <fcntl.h>
-#include "get_next_line.h"
-#include "/usr/include/minilibx-linux/mlx.h"
-#define WALL '1'
-#define PLAYER 'P'
-#define SPACE '0'
-#define EXIT 'E'
-#define COLLECTABLE 'C'
+# define SO_LONG_H
 
-/*extern int player_row;
-extern int player_col;
-extern int collected_items ;
-extern int total_collectables ;
-*/
+# include "mlx.h"
+# include <fcntl.h>
+# include <unistd.h>
+# include <stdlib.h>
+# include <stdio.h>
+# include <string.h>
 
-int check_argc(int c);
-int open_file(char *file_name);
-void process_map(char **map, int rows, int cols);
-void free_map(char **map , int rows);
-void print_map(char **tab , int rows , int cols);
-void draw_map(void *mlx , void *mlx_win , char **tab , int rows , int cols);
-void find_player_position(char **tab , int rows , int cols);
-int move_player(char **tab , int rows ,  int cols , char direction);
-int key_hook(int keycode , void *param);
-void mlx_stuff(char **map , int rows , int cols , void *mlx ,void *mlx_win);
+# define PLAYER 'P'
+# define COLLECTABLE 'C'
+# define WALL '1'
+# define SPACE '0'
+# define EXIT 'E'
+
+# define WIN_WIDTH 64
+# define WIN_HEIGHT 64
+
+typedef struct s_game {
+    void    *mlx;
+    void    *mlx_win;
+    void    *img;
+    int     width;
+    int     height;
+    char    **map;
+    int     rows;
+    int     cols;
+    int     player_row;
+    int     player_col;
+    int     collected_items;
+    int     total_collectables;
+    int     movements;
+} t_game;
+
+int     open_file(char *file_name);
+void    read_map_size(t_game *game, char *file_name);
+void    allocate_map(t_game *game, char *file_name);
+void    process_map(t_game *game);
+
+
+void    validate_map(t_game *game);
+int     check_rectangular_map(t_game *game);
+int     check_surrounding_walls(t_game *game);
+int     check_exit_and_collectables(t_game *game);
+
+int     move_player(t_game *game, char direction);
+int     can_move(t_game *game, int new_row, int new_col, char direction);
+void    move_and_collect(t_game *game, int new_row, int new_col);
+
+void    draw_map(t_game *game);
+void    *load_image(t_game *game, char tile);
+void    init_mlx(t_game *game);
+int     key_hook(int keycode, void *param);
+void    display_moves(t_game *game);
+
+void    free_map(char **map, int rows);
+
 #endif
-
